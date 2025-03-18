@@ -1,9 +1,11 @@
 import { Hono } from 'hono';
 
-const app = new Hono();
+import { WorkersEnv } from '@/types/workers';
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!');
-});
+type HonoBindings = {
+  Bindings: WorkersEnv; // eslint-disable-line @typescript-eslint/naming-convention
+};
+
+const app = new Hono<HonoBindings>();
 
 export default app;
