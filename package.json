@@ -1,0 +1,23 @@
+{
+  "name": "archive-bot-backend",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy --minify"
+  },
+  "dependencies": {
+    "hono": "^4.7.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250214.0",
+    "@typescript-eslint/eslint-plugin": "^7.1.1",
+    "@typescript-eslint/parser": "^7.1.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-perfectionist": "^2.5.0",
+    "eslint-plugin-prettier": "^5.1.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "prettier": "^3.5.2",
+    "typescript-eslint": "^8.22.0",
+    "wrangler": "^3.109.2"
+  }
+}
