@@ -37,4 +37,10 @@ app.post('/message/add', async (c) => {
   return c.text('OK');
 });
 
+// app.get('/images', async (c) => {
+//   // const file = s3.file('1.png');
+//   // const buffer = Buffer.from(await file.arrayBuffer());
+//   // await write('1.png', buffer);
+// });
+
 export default app;
