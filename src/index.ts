@@ -1,7 +1,9 @@
+import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { Hono } from 'hono';
 
-import { d1 } from '@/db';
+import { d1, s3 } from '@/db';
 import { messages } from '@/db/schema';
+import { uploadFileMiddleware } from '@/middlewares/upload';
 import { ParseBodyFromSchema } from '@/types/schema';
 import { WorkersEnv } from '@/types/workers';
 import { handleError } from '@/utils/error';
@@ -37,10 +39,28 @@ app.post('/message/add', async (c) => {
   return c.text('OK');
 });
 
-// app.get('/images', async (c) => {
-//   // const file = s3.file('1.png');
-//   // const buffer = Buffer.from(await file.arrayBuffer());
-//   // await write('1.png', buffer);
-// });
+app.get('/image/:id', async (c) => {
+  const { id } = c.req.param();
+
+  const file = await s3.send(
+    new GetObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: `${id}.png`,
+    })
+  );
+
+  const arr = await file.Body!.transformToByteArray();
+
+  return c.body(arr, {
+    status: 201,
+    headers: {
+      'Content-Type': 'image/png',
+    },
+  });
+});
+
+app.post('/image/upload', uploadFileMiddleware, async (c) => {
+  return c.json({ success: true, id: c.get('id') });
+});
 
 export default app;
