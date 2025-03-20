@@ -1,8 +1,5 @@
 ```
-npm install
-npm run dev
-```
-
-```
-npm run deploy
+corepack enable
+pnpm i
+pnpm dev
 ```
