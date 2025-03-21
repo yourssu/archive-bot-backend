@@ -1,46 +1,38 @@
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { createMiddleware } from 'hono/factory';
-import { getExtension } from 'hono/utils/mime';
 import { v4 as uuidv4 } from 'uuid';
 
 import { s3 } from '@/db';
 import { MiddlewareVariables } from '@/types/middleware';
 import { handleError } from '@/utils/error';
+import { getExtension } from '@/utils/mime';
 
-export const uploadFileMiddleware = createMiddleware<MiddlewareVariables<{ id: string }>>(
+export const uploadFileMiddleware = createMiddleware<MiddlewareVariables<{ key: string }>>(
   async (c, next) => {
-    const { image } = await c.req.parseBody();
+    const file = await c.req.blob();
 
-    if (image === undefined) {
-      return c.json(handleError(new Error('image 필드가 비어있어요.')), 400);
-    }
-
-    if (!(image instanceof File)) {
-      return c.json(handleError(new Error('image 필드가 파일이 아니에요.')), 400);
-    }
-
-    const extension = getExtension(image.type);
+    const extension = getExtension(file.type);
     if (!extension) {
       return c.json(handleError(new Error('지원하지 않는 확장자에요.')), 400);
     }
 
-    const id = uuidv4();
-    const fileName = `${id}.${extension}`;
-    const buffer = Buffer.from(await image.arrayBuffer());
+    const key = `${uuidv4()}.${extension}`;
+    const buffer = Buffer.from(await file.arrayBuffer());
 
     try {
       await s3.send(
         new PutObjectCommand({
           Bucket: process.env.S3_BUCKET_NAME,
-          Key: fileName,
+          Key: key,
           Body: buffer,
+          ContentType: file.type,
         })
       );
     } catch (e: unknown) {
       return c.json(handleError(e), 500);
     }
 
-    c.set('id', id);
+    c.set('key', key);
     await next();
   }
 );

@@ -1,8 +1,8 @@
-export const isError = (error: any): error is Error => {
+export const isError = (error: unknown): error is Error => {
   return error instanceof Error;
 };
 
-type ErrorResult<TError = any> =
+type ErrorResult<TError = unknown> =
   | {
       error: Error;
       message: string;
@@ -16,7 +16,7 @@ type ErrorResult<TError = any> =
 
 const defaultErrorMessage = '오류가 발생했어요. 잠시 후 다시 시도해 주세요.';
 
-const errorToResult = <TError = any>(error: TError): ErrorResult<TError> => {
+const errorToResult = <TError = unknown>(error: TError): ErrorResult<TError> => {
   if (isError(error)) {
     return {
       type: 'Error',
@@ -31,6 +31,6 @@ const errorToResult = <TError = any>(error: TError): ErrorResult<TError> => {
   };
 };
 
-export const handleError = <TError = any>(error: TError) => {
+export const handleError = <TError = unknown>(error: TError) => {
   return errorToResult(error);
 };
