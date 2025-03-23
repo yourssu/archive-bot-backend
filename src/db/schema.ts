@@ -8,4 +8,5 @@ export const messages = sqliteTable('messages', {
   user: text('user', { mode: 'json' }).notNull(),
   reactions: text('reactions', { mode: 'json' }),
   files: text('files', { mode: 'json' }),
+  text: text('text'),
 });
