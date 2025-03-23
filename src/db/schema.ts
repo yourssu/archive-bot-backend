@@ -27,13 +27,12 @@ export const threads = sqliteTable('threads', {
   ts: text('ts').primaryKey().notNull(),
   archivedAt: text('archivedAt').notNull(),
   channel: text('channel').notNull(),
-  headId: text('headId').notNull(),
 });
 
 export const threadsRelations = relations(threads, ({ many, one }) => ({
   messages: many(messages),
   head: one(messages, {
-    fields: [threads.headId],
+    fields: [threads.ts],
     references: [messages.ts],
   }),
   channel: one(channels, {

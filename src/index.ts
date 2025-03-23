@@ -43,7 +43,14 @@ app.post('/channel/add', async (c) => {
   const db = d1(c.env.DB);
 
   try {
-    await db.insert(channels).values(body).onConflictDoNothing().run();
+    await db
+      .insert(channels)
+      .values(body)
+      .onConflictDoUpdate({
+        target: channels.id,
+        set: body,
+      })
+      .run();
   } catch (e: unknown) {
     return c.json(handleError(e), 400);
   }
