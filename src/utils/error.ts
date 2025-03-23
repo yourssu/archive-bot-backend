@@ -6,11 +6,13 @@ type ErrorResult<TError = unknown> =
   | {
       error: Error;
       message: string;
+      stack: string | undefined;
       type: 'Error';
     }
   | {
       error: TError;
       message: string;
+      stack: undefined;
       type: 'Unknown';
     };
 
@@ -22,10 +24,12 @@ const errorToResult = <TError = unknown>(error: TError): ErrorResult<TError> => 
       type: 'Error',
       error,
       message: error.message,
+      stack: error.stack,
     };
   }
   return {
     error,
+    stack: undefined,
     message: typeof error === 'string' ? error : defaultErrorMessage,
     type: 'Unknown',
   };

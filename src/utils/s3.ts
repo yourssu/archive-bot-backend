@@ -9,10 +9,10 @@ import { s3 } from '@/db';
 
 export const checkObjectExists = async (params: HeadObjectCommandInput) => {
   try {
-    await headObject(params);
+    await getObject(params);
     return true;
   } catch (e: unknown) {
-    if (e instanceof Error && e.name === 'NotFound') {
+    if (e instanceof Error && e.name.toLowerCase() === 'nosuchkey') {
       return false;
     }
     throw e;
