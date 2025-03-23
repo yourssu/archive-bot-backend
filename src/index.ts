@@ -126,4 +126,8 @@ app.put('/file/upload', uploadFileMiddleware, async (c) => {
   return c.json({ success: true, key: c.get('key') });
 });
 
+app.onError((err, c) => {
+  return c.json(handleError(err), 500);
+});
+
 export default app;
