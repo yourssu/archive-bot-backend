@@ -34,7 +34,14 @@ app.post('/message/add', async (c) => {
   const db = d1(c.env.DB);
 
   try {
-    await db.insert(messages).values(value).run();
+    await db
+      .insert(messages)
+      .values(value)
+      .onConflictDoUpdate({
+        target: messages.ts,
+        set: value,
+      })
+      .run();
   } catch (e: unknown) {
     return c.json(handleError(e), 400);
   }
