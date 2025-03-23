@@ -15,6 +15,20 @@
       "when": 1742755262305,
       "tag": "0001_cooing_catseye",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1742764800918,
+      "tag": "0002_spooky_pepper_potts",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1742765653225,
+      "tag": "0003_overconfident_sage",
+      "breakpoints": true
     }
   ]
 }

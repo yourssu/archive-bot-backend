@@ -1,0 +1,1 @@
+npx wrangler d1 execute archiving-bot-db --remote --file=$1

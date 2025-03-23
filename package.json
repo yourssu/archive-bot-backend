@@ -4,7 +4,9 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
     "db:gen": "drizzle-kit generate",
-    "db:up": "drizzle-kit up"
+    "db:up": "drizzle-kit up",
+    "migrate:local": "./scripts/migrate.local.sh",
+    "migrate:remote": "./scripts/migrate.remote.sh"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.758.0",
