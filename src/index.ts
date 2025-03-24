@@ -128,6 +128,9 @@ app.post('/message/add', async (c) => {
   const body = await c.req.parseBody<ParseBodyFromSchema<typeof messages>>();
   const value = {
     ...body,
+    user: JSON.parse(body.user),
+    reactions: body.reactions ? JSON.parse(body.reactions) : undefined,
+    files: body.files ? JSON.parse(body.files) : undefined,
     edited: transformStringBoolean(body.edited),
   };
 

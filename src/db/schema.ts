@@ -1,14 +1,38 @@
 import { relations } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
+export type MessageUser = {
+  avatar: string;
+  id: string;
+  isBot: boolean;
+  name: string;
+};
+
+export type MessageReactionItem = {
+  count: number;
+  name: string;
+  users: string[];
+};
+
+export type MessageFileItem = {
+  created: number;
+  filetype: string;
+  height?: string;
+  id: string;
+  mimetype: string;
+  name: string;
+  size: number;
+  width?: string;
+};
+
 export const messages = sqliteTable('messages', {
   ts: text('ts').primaryKey().notNull(),
   threadTs: text('threadTs').notNull(),
   channel: text('channel').notNull(),
   edited: integer('edited', { mode: 'boolean' }).notNull(),
-  user: text('user', { mode: 'json' }).notNull(),
-  reactions: text('reactions', { mode: 'json' }),
-  files: text('files', { mode: 'json' }),
+  user: text('user', { mode: 'json' }).$type<MessageUser>().notNull(),
+  reactions: text('reactions', { mode: 'json' }).$type<MessageReactionItem[]>(),
+  files: text('files', { mode: 'json' }).$type<MessageFileItem[]>(),
   text: text('text'),
 });
 
