@@ -17,7 +17,7 @@ type HonoBindings = {
   Bindings: WorkersEnv; // eslint-disable-line @typescript-eslint/naming-convention
 };
 
-const app = new Hono<HonoBindings>();
+const app = new Hono<HonoBindings>().basePath('/api');
 
 app.get('/channels', async (c) => {
   const db = d1(c.env.DB);
