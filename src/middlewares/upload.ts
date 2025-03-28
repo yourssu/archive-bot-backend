@@ -40,6 +40,7 @@ export const uploadFileMiddleware = createMiddleware<MiddlewareVariables<{ key: 
             Key: key,
             Body: buffer,
             ContentType: file.type,
+            ContentLength: file.size,
           })
         );
       }

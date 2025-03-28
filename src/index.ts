@@ -1,3 +1,4 @@
+import { GetObjectCommandOutput } from '@aws-sdk/client-s3';
 import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { stream } from 'hono/streaming';
@@ -153,6 +154,20 @@ app.post('/message/add', async (c) => {
 });
 
 app.get('/file/:id', async (c) => {
+  const getRange = (videoSize: number) => {
+    const range = c.req.header('Range');
+    if (!range) {
+      return undefined;
+    }
+
+    const parts = range.replace(/bytes=/, ``).split(`-`);
+    const start = parseInt(parts[0], 10);
+    const end = parts[1] ? parseInt(parts[1], 10) : videoSize - 1;
+    const chunkSize = end - start + 1;
+
+    return { start, end, chunkSize };
+  };
+
   const { id } = c.req.param();
   const mimeType = getMimetype(id);
 
@@ -166,6 +181,7 @@ app.get('/file/:id', async (c) => {
   }
 
   c.header('Content-Encoding', 'Identity');
+  c.header('Accept-Ranges', 'bytes');
 
   if (fileType === 'image') {
     const file = await getObject({
@@ -181,19 +197,39 @@ app.get('/file/:id', async (c) => {
     });
   }
 
-  const videoSize = await getObjectFileSize({
-    Bucket: process.env.S3_BUCKET_NAME,
-    Key: id,
-  });
-
-  const range = c.req.header('Range');
-  c.status(206);
-
-  if (!range) {
-    const file = await getObject({
+  let fullFile: GetObjectCommandOutput | undefined = undefined;
+  let videoSize = 0;
+  try {
+    videoSize = await getObjectFileSize({
       Bucket: process.env.S3_BUCKET_NAME,
       Key: id,
     });
+  } catch (e) {
+    try {
+      const file = await getObject({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: id,
+      });
+      if (file.ContentLength) {
+        videoSize = file.ContentLength;
+        fullFile = file;
+      }
+    } catch (e) {
+      return c.json(handleError(new Error('파일을 찾을 수 없어요.')), 400);
+    }
+  }
+
+  c.status(206);
+
+  const range = getRange(videoSize);
+
+  if (!range) {
+    const file =
+      fullFile ??
+      (await getObject({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: id,
+      }));
     const webStream = file.Body!.transformToWebStream();
 
     c.header('Content-Type', file.ContentType ?? '');
@@ -204,16 +240,15 @@ app.get('/file/:id', async (c) => {
     });
   }
 
-  const parts = range.replace(/bytes=/, ``).split(`-`);
-  const start = parseInt(parts[0], 10);
-  const end = parts[1] ? parseInt(parts[1], 10) : videoSize - 1;
-  const chunkSize = end - start + 1;
+  const { start, end, chunkSize } = range;
 
-  const file = await getObject({
-    Bucket: process.env.S3_BUCKET_NAME,
-    Key: id,
-    Range: `bytes=${start}-${end}`,
-  });
+  const file =
+    fullFile ??
+    (await getObject({
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: id,
+      Range: `bytes=${start}-${end}`,
+    }));
 
   c.header('Content-Type', file.ContentType ?? '');
   c.header('Content-Length', chunkSize.toString());
