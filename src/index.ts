@@ -1,6 +1,7 @@
 import { GetObjectCommandOutput } from '@aws-sdk/client-s3';
 import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
+import { cors } from 'hono/cors';
 import { stream } from 'hono/streaming';
 
 import { d1 } from '@/db';
@@ -20,6 +21,17 @@ type HonoBindings = {
 
 const app = new Hono<HonoBindings>().basePath('/api');
 
+app.use(
+  '*',
+  cors({
+    origin: ['http://localhost:3000', 'https://slack-archive-client.vercel.app'],
+    allowMethods: ['GET', 'POST', 'PUT'],
+    allowHeaders: ['Content-Type'],
+    maxAge: 3600,
+    credentials: true,
+  })
+);
+
 app.get('/channels', async (c) => {
   const db = d1(c.env.DB);
   const result = await db.select().from(channels).all();
@@ -32,7 +44,7 @@ app.get('/channel/:id', async (c) => {
   const result = await db.select().from(channels).where(eq(channels.id, id));
 
   if (result.length === 0) {
-    return c.json(handleError(new Error('올바르지 않은 채널 id에요.')), 400);
+    return c.json(handleError(new Error('올바르지 않은 채널c id에요.')), 400);
   }
 
   return c.json(result[0]);
