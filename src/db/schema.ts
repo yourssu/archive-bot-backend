@@ -1,6 +1,11 @@
 import { relations } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
+export type ThreadMetadata = {
+  messagesAmount: number;
+  userAvatars: string[];
+};
+
 export type MessageUser = {
   avatar: string;
   id: string;
@@ -51,6 +56,7 @@ export const threads = sqliteTable('threads', {
   ts: text('ts').primaryKey().notNull(),
   archivedAt: text('archivedAt').notNull(),
   channel: text('channel').notNull(),
+  metadata: text('metadata', { mode: 'json' }).$type<ThreadMetadata>().notNull(),
 });
 
 export const threadsRelations = relations(threads, ({ many, one }) => ({

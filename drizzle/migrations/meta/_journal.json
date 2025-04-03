@@ -36,6 +36,27 @@
       "when": 1742770927294,
       "tag": "0004_dizzy_blazing_skull",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1743642854222,
+      "tag": "0005_hard_toro",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1743642974893,
+      "tag": "0006_dazzling_slyde",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1743643043756,
+      "tag": "0007_slippery_weapon_omega",
+      "breakpoints": true
     }
   ]
 }
