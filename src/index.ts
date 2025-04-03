@@ -1,5 +1,5 @@
 import { GetObjectCommandOutput } from '@aws-sdk/client-s3';
-import { eq } from 'drizzle-orm';
+import { count, eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { stream } from 'hono/streaming';
@@ -35,6 +35,30 @@ app.use(
     credentials: true,
   })
 );
+
+app.get('/counts', async (c) => {
+  const db = d1(c.env.DB);
+  const [channelsCount, threadsCount, messagesCount] = await Promise.all([
+    db
+      .select({ count: count() })
+      .from(channels)
+      .then((result) => result[0].count),
+    db
+      .select({ count: count() })
+      .from(threads)
+      .then((result) => result[0].count),
+    db
+      .select({ count: count() })
+      .from(messages)
+      .then((result) => result[0].count),
+  ]);
+
+  return c.json({
+    channels: channelsCount,
+    threads: threadsCount,
+    messages: messagesCount,
+  });
+});
 
 app.get('/channels', async (c) => {
   const db = d1(c.env.DB);
