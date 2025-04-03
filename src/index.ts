@@ -105,16 +105,20 @@ app.get('/thread/:id', async (c) => {
 
 app.post('/thread/add', async (c) => {
   const body = await c.req.parseBody<ParseBodyFromSchema<typeof threads>>();
+  const value = {
+    ...body,
+    metadata: JSON.parse(body.metadata),
+  };
 
   const db = d1(c.env.DB);
 
   try {
     await db
       .insert(threads)
-      .values(body)
+      .values(value)
       .onConflictDoUpdate({
         target: threads.ts,
-        set: body,
+        set: value,
       })
       .run();
   } catch (e: unknown) {
