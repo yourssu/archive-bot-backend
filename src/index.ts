@@ -24,7 +24,11 @@ const app = new Hono<HonoBindings>().basePath('/api');
 app.use(
   '*',
   cors({
-    origin: ['http://localhost:3000', 'https://slack-archive-client.vercel.app'],
+    origin: [
+      'http://localhost:3000',
+      'https://slack-archive-client.vercel.app',
+      'https://archive.yourssu.com',
+    ],
     allowMethods: ['GET', 'POST', 'PUT'],
     allowHeaders: ['Content-Type'],
     maxAge: 3600,
