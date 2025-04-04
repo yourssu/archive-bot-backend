@@ -174,9 +174,10 @@ app.post('/message/add', async (c) => {
   const value = {
     ...body,
     user: JSON.parse(body.user),
+    edited: transformStringBoolean(body.edited),
     reactions: body.reactions ? JSON.parse(body.reactions) : undefined,
     files: body.files ? JSON.parse(body.files) : undefined,
-    edited: transformStringBoolean(body.edited),
+    attachments: body.attachments ? JSON.parse(body.attachments) : undefined,
   };
 
   const db = d1(c.env.DB);

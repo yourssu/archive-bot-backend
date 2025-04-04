@@ -35,9 +35,9 @@ export type MessageLinkAttachmentItem = {
   imageHeight?: number;
   imageUrl?: string;
   imageWidth?: number;
-  serviceIcon: string;
+  serviceIcon?: string;
   serviceName: string;
-  text: string;
+  text?: string;
   title: string;
   titleLink: string;
   type: 'link';
@@ -47,10 +47,10 @@ export type MessageLinkAttachmentItem = {
 export type MessageYoutubeAttachmentItem = {
   authorLink: string;
   authorName: string;
-  serviceIcon: string;
+  serviceIcon?: string;
   serviceName: string;
   serviceUrl: string;
-  text: string;
+  text?: string;
   thumbHeight: number;
   thumbUrl: string;
   thumbWidth: number;
@@ -58,9 +58,20 @@ export type MessageYoutubeAttachmentItem = {
   titleLink: string;
   type: 'youtube';
   url: string;
-  videoHTM: string;
+  videoHTML: string;
   videoHTMLHeight: number;
   videoHTMLWidth: number;
+};
+
+export type MessageSlackAttachmentItem = {
+  authorIcon: string;
+  authorLink: string;
+  authorName: string;
+  footer: string;
+  text?: string;
+  ts: string;
+  type: 'slack';
+  url: string;
 };
 
 export const messages = sqliteTable('messages', {
@@ -73,7 +84,7 @@ export const messages = sqliteTable('messages', {
   files: text('files', { mode: 'json' }).$type<MessageFileItem[]>(),
   text: text('text'),
   attachments: text('attachments', { mode: 'json' }).$type<
-    (MessageLinkAttachmentItem | MessageYoutubeAttachmentItem)[]
+    (MessageLinkAttachmentItem | MessageSlackAttachmentItem | MessageYoutubeAttachmentItem)[]
   >(),
 });
 
