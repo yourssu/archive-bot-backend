@@ -6,10 +6,11 @@ import { MiddlewareVariables } from '@/types/middleware';
 import { handleError } from '@/utils/error';
 import { getExtension } from '@/utils/mime';
 import { checkObjectExists } from '@/utils/s3';
+import { transformStringBoolean } from '@/utils/transform';
 
 export const uploadFileMiddleware = createMiddleware<MiddlewareVariables<{ key: string }>>(
   async (c, next) => {
-    const { file, id } = await c.req.parseBody();
+    const { file, id, forceUpload } = await c.req.parseBody();
 
     if (!file || !(file instanceof File)) {
       return c.json(handleError(new Error('file 필드가 없거나 올바르지 않아요.')), 400);
@@ -17,6 +18,14 @@ export const uploadFileMiddleware = createMiddleware<MiddlewareVariables<{ key: 
 
     if (!id || typeof id !== 'string') {
       return c.json(handleError(new Error('id 필드가 없거나 올바르지 않아요.')), 400);
+    }
+
+    if (
+      !forceUpload ||
+      typeof forceUpload !== 'string' ||
+      (forceUpload !== 'true' && forceUpload !== 'false')
+    ) {
+      return c.json(handleError(new Error('forceUpload 필드가 없거나 올바르지 않아요.')), 400);
     }
 
     const extension = getExtension(file.type);
@@ -33,7 +42,7 @@ export const uploadFileMiddleware = createMiddleware<MiddlewareVariables<{ key: 
         Key: key,
       });
 
-      if (!exists) {
+      if (!exists || transformStringBoolean(forceUpload)) {
         await s3.send(
           new PutObjectCommand({
             Bucket: process.env.S3_BUCKET_NAME,
