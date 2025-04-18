@@ -27,6 +27,7 @@ app.use(
     origin: [
       'http://localhost:3000',
       'https://slack-archive-client.vercel.app',
+      'https://slack-archive-client-filtered.vercel.app',
       'https://archive.yourssu.com',
     ],
     allowMethods: ['GET', 'POST', 'PUT'],
